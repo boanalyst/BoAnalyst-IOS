@@ -1,0 +1,31 @@
+workflows:
+  ios-workflow:
+    name: iOS Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      ios_signing:
+        distribution_type: development
+        bundle_identifier: com.boanalyst.app
+      xcode: 14.3.1
+    scripts:
+      - name: Build iOS app
+        script: |
+          xcodebuild -project BoAnalyst.xcodeproj \
+            -scheme BoAnalyst \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath build/BoAnalyst.xcarchive \
+            archive
+      - name: Export IPA
+        script: |
+          xcodebuild -exportArchive \
+            -archivePath build/BoAnalyst.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist exportOptions.plist
+    artifacts:
+      - build/*.ipa
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
